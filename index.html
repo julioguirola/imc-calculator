@@ -1,43 +1,251 @@
-<html>
+<!doctype html>
+<html lang="es">
     <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Calculadora de IMC</title>
         <style>
-            #container {
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: "Arial", sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
                 display: flex;
-                flex-direction: column;
-                justify-content: center;
                 align-items: center;
-                gap: 20px;
+                justify-content: center;
+                padding: 20px;
+            }
+
+            .container {
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 20px;
+                padding: 40px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+                backdrop-filter: blur(10px);
+                max-width: 400px;
+                width: 100%;
+                text-align: center;
+            }
+
+            .title {
+                color: #333;
+                font-size: 2.5rem;
+                margin-bottom: 30px;
+                font-weight: bold;
+            }
+
+            .input-group {
+                margin-bottom: 25px;
+                text-align: left;
+            }
+
+            .input-group label {
+                display: block;
+                margin-bottom: 8px;
+                color: #555;
+                font-weight: 600;
+                font-size: 1.1rem;
+            }
+
+            .input-group input {
+                width: 100%;
+                padding: 15px;
+                border: 2px solid #e0e0e0;
+                border-radius: 10px;
+                font-size: 1.1rem;
+                transition: border-color 0.3s ease;
+                outline: none;
+            }
+
+            .input-group input:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+
+            .calculate-btn {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white;
-                border-radius: 32px;
+                border: none;
+                padding: 15px 30px;
+                font-size: 1.2rem;
+                border-radius: 10px;
+                cursor: pointer;
+                transition:
+                    transform 0.2s ease,
+                    box-shadow 0.2s ease;
+                width: 100%;
+                margin-bottom: 30px;
+            }
+
+            .calculate-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            }
+
+            .result {
+                padding: 20px;
+                border-radius: 15px;
+                margin-top: 20px;
+                font-size: 1.1rem;
+                font-weight: 600;
+                display: none;
+            }
+
+            .result.normal {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                color: white;
+            }
+
+            .result.underweight {
+                background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+                color: white;
+            }
+
+            .result.overweight {
+                background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+                color: white;
+            }
+
+            .result.obese {
+                background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+                color: white;
+            }
+
+            .imc-value {
+                font-size: 2rem;
+                margin-bottom: 10px;
+            }
+
+            .health-icon {
+                font-size: 3rem;
+                margin-bottom: 15px;
             }
         </style>
     </head>
-    <body style="width: 100%; display: flex; justify-content: center">
-        <div
-            id="container"
-            style="background-color: #383fcc; width: 600px; height: 600px"
-        >
-            <h1>Calculador de Imc</h1>
-            <label for="peso">Peso en Kg</label>
-            <input type="number" id="peso" />
-            <label for="talla">Talla en M</label>
-            <input type="number" id="talla" />
-            <button>Calcular</button>
-            <span>Resultado:</span>
-        </div>
-        <script>
-            const button = document.querySelector("button");
-            const peso = document.querySelector("#peso").value;
-            const talla = document.querySelector("#talla").value;
-            const span = document.querySelector("span");
+    <body>
+        <div class="container">
+            <h1 class="title">🏥 IMC Calculator</h1>
 
-            function calculateImc(peso, talla) {
-                return peso / (talla * talla);
+            <div class="input-group">
+                <label for="weight">Peso (kg):</label>
+                <input
+                    type="number"
+                    id="weight"
+                    placeholder="Ingresa tu peso"
+                    step="0.1"
+                    min="1"
+                />
+            </div>
+
+            <div class="input-group">
+                <label for="height">Altura (cm):</label>
+                <input
+                    type="number"
+                    id="height"
+                    placeholder="Ingresa tu altura"
+                    step="0.1"
+                    min="1"
+                />
+            </div>
+
+            <button class="calculate-btn" onclick="calculateIMC()">
+                ✨ Calcular IMC
+            </button>
+
+            <div id="result" class="result">
+                <div class="health-icon" id="healthIcon"></div>
+                <div class="imc-value" id="imcValue"></div>
+                <div id="imcCategory"></div>
+                <div id="healthAdvice"></div>
+            </div>
+        </div>
+
+        <script>
+            function calculateIMC() {
+                const weight = parseFloat(
+                    document.getElementById("weight").value,
+                );
+                const height = parseFloat(
+                    document.getElementById("height").value,
+                );
+                const resultDiv = document.getElementById("result");
+                const imcValue = document.getElementById("imcValue");
+                const imcCategory = document.getElementById("imcCategory");
+                const healthAdvice = document.getElementById("healthAdvice");
+                const healthIcon = document.getElementById("healthIcon");
+
+                if (!weight || !height || weight <= 0 || height <= 0) {
+                    alert(
+                        "Por favor, ingresa valores válidos para peso y altura.",
+                    );
+                    return;
+                }
+
+                const heightInMeters = height / 100;
+                const imc = weight / (heightInMeters * heightInMeters);
+
+                let category = "";
+                let advice = "";
+                let icon = "";
+                let className = "";
+
+                if (imc < 18.5) {
+                    category = "Bajo peso";
+                    advice =
+                        "Considera consultar con un profesional de la salud para aumentar tu peso de forma saludable.";
+                    icon = "⚖️";
+                    className = "underweight";
+                } else if (imc >= 18.5 && imc < 25) {
+                    category = "Peso normal";
+                    advice =
+                        "¡Excelente! Mantén un estilo de vida saludable con ejercicio regular y buena alimentación.";
+                    icon = "✅";
+                    className = "normal";
+                } else if (imc >= 25 && imc < 30) {
+                    category = "Sobrepeso";
+                    advice =
+                        "Considera hacer más ejercicio y mejorar tu alimentación. Consulta con un profesional si es necesario.";
+                    icon = "⚠️";
+                    className = "overweight";
+                } else {
+                    category = "Obesidad";
+                    advice =
+                        "Te recomendamos consultar con un profesional de la salud para desarrollar un plan personalizado.";
+                    icon = "🚨";
+                    className = "obese";
+                }
+
+                imcValue.textContent = `IMC: ${imc.toFixed(1)}`;
+                imcCategory.textContent = category;
+                healthAdvice.textContent = advice;
+                healthIcon.textContent = icon;
+
+                resultDiv.className = `result ${className}`;
+                resultDiv.style.display = "block";
+
+                resultDiv.scrollIntoView({ behavior: "smooth" });
             }
 
-            button.onclick = () => {
-                span.innerText = calculateImc(peso, talla);
-            };
+            document
+                .getElementById("weight")
+                .addEventListener("keypress", function (e) {
+                    if (e.key === "Enter") {
+                        calculateIMC();
+                    }
+                });
+
+            document
+                .getElementById("height")
+                .addEventListener("keypress", function (e) {
+                    if (e.key === "Enter") {
+                        calculateIMC();
+                    }
+                });
         </script>
     </body>
 </html>
