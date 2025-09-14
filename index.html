@@ -32,11 +32,11 @@
             const span = document.querySelector("span");
 
             function calculateImc(peso, talla) {
-                return Math.floor(peso / (talla * talla));
+                return peso / (talla * talla);
             }
 
             button.onclick = () => {
-                span.innerText = "Resultado: " + calculateImc(peso, talla);
+                span.innerText = calculateImc(peso, talla);
             };
         </script>
     </body>
